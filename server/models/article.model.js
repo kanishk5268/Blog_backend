@@ -6,7 +6,7 @@ const articleSchema = new mongoose.Schema({
         required:true,
         unique:true,
         minlength:[5,"Article title should be atleast 5 characters long"],
-        maxlength:[50,"Article title should be less than 50 characters"]
+        maxlength:[100,"Article title should be less than 50 characters"]
     },
     body:{
         type:String,
