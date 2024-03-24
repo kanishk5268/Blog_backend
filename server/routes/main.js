@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
       .limit(perPage)
       .exec();
 
-    const count =   await Article.countDocuments();
+    const count = await Article.countDocuments();
     const nextPage = parseInt(page) + 1;
     const hasNextPage = nextPage <= Math.ceil(count / perPage);
 
@@ -27,6 +27,52 @@ router.get("/", async (req, res) => {
       data,
       current: page,
       nextPage: hasNextPage ? nextPage : null,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// post:id
+
+router.get("/post/:id", async (req, res) => {
+  try {
+    let slug = req.params.id;
+
+    const data = await Article.findById({ _id: slug });
+    const locals = {
+      title: data.title,
+      description: "It is simple Blog App",
+    };
+
+    res.render("post", { locals, data });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//post-search item
+
+router.post("/search", async (req, res) => {
+  try {
+    const locals = {
+      title: "BlogApp",
+      description: "It is simple Blog App",
+    };
+
+    let searchTerm = req.body.searchTerm;
+    const searchNoSpecialChar = searchTerm.replace(/[^a-zA-Z0-9]/g, "");
+
+    const data = await Article.find({
+      $or: [
+        { title: { $regex: new RegExp(searchNoSpecialChar, "i") } },
+        { body: { $regex: new RegExp(searchNoSpecialChar, "i") } },
+      ],
+    });
+
+    res.render("search", {
+      data,
+      locals,
     });
   } catch (error) {
     console.log(error);
